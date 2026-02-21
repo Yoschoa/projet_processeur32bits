@@ -1,36 +1,39 @@
-#ifndef ASSEMBLER_H
-#define ASSEMBLER_H
+#ifndef ASSEMBLER.H
+#define ASSEMBLER.H
+#include <stdio.h>
 
-// the maximum number of tokens per istructions
-#define MAX_TOKENS 4
-#define MAX_TOKEN_LENGTH 32;
+#define MAX_NUMBER_OF_INSTRUCTIONS 19
 
-typedef enum {
-
+typedef enum  {
     FORMAT_R,
     FORMAT_I,
-    FORMAT_B,
-    FORMAT_JI,
+    FORMAT_J,
     FORMAT_JR,
+    FORMAT_JI,
+    FORMAT_B,
+    FORMAT_S,
+    FORMAT_H,
 
 } FORMAT;
 
-struct INSTRUCTION_FORMAT {
-    char    *mnemonic;
-    int     opCode;
-    FORMAT  format;
-};
+typedef struct  {
+    int     opcode;
+    char    mnemonic[10];
+    FORMAT  format[2];
+    int     numOfOperands;
+} INSTRUCTION_LAYOUT;
+
+/* Function to validate a line of code in assembly returns 0 if line is valid (in regards to the number of operands needed to execute the instruction called in the line), -1 otherwise*/
+int validateCode(char mnemonic[10], int numOfOperands);
+
+/*Function to get the format of and instruction(I, R, JI, JR, etc.) using it's mnemonic and 2nd operand*/
+FORMAT getInstructionFormat(char mnemonic[10], char operand[10]);
+
+/* Function to parse/encode instruction and operands into a 8 byte hexadecimal word*/
+int encode(int opcode, int srcReg1,int imm, int srcReg2, int srcReg3);
 
 
-
-/* Function prototype to fetch a line of code and tokenise it.
-The function returns a 2D array of tokens where each row represents tokens per line in .asm file */  
-int tokenise(char *line, char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH]);
-
-/* Function prototype to parse each row of the 2D token array into a hexadecimal instruction word*/
-int  parseTokens(char tokens[][MAX_TOKEN_LENGTH], int count);
-
-// the function runASM will runs the cycle fetch -> tokenise -> parse / encode -> store in bin file
-void runASM();
+/* Function to run the different steps of the assembler logic*/
+void runASM(FILE *fptr);
 
 #endif
