@@ -1,0 +1,29 @@
+# ==========================================
+# VS Code
+# ==========================================
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+
+# ==========================================
+# Terminal Editors & Linux Temp Files
+# ==========================================
+*.swp
+*.swo
+*.swn
+*~
+.*.sw[a-p]
+
+# ==========================================
+# Cross-Compilation / Embedded Outputs
+# ==========================================
+# Final executables and binaries
+*.out
+*.exe
+*.elf
+*.bin
+*.hex
