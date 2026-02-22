@@ -3,6 +3,15 @@
 #include <stdio.h>
 
 #define MAX_NUMBER_OF_INSTRUCTIONS 19
+#define MAX_NUM_TOKENS 4
+
+// Define the index used to access elements of the array instrTokens
+#define OPCODE_INDEX 0
+#define SRC_REG_INDEX1 1
+#define IMM_FLAG_INDEX 2
+#define SRC_REG_INDEX2 3
+#define DEST_REG_INDEX 4
+
 
 typedef enum  {
     FORMAT_R,
@@ -23,14 +32,16 @@ typedef struct  {
     int     numOfOperands;
 } INSTRUCTION_LAYOUT;
 
-/* Function to validate a line of code in assembly returns 0 if line is valid (in regards to the number of operands needed to execute the instruction called in the line), -1 otherwise*/
-int validateCode(char mnemonic[10], int numOfOperands);
+typedef struct {
+    char name[100];
+    int lineNum;
+} LABEL;
 
-/*Function to get the format of and instruction(I, R, JI, JR, etc.) using it's mnemonic and 2nd operand*/
-FORMAT getInstructionFormat(char mnemonic[10], char operand[10]);
+/* Function procedure to parse the opcode, register numbers, immFlag, etc, then store them in array*/
+void extractTokens(char *opName, char *operandString, int instrTokens[MAX_NUM_TOKENS]);
 
 /* Function to parse/encode instruction and operands into a 8 byte hexadecimal word*/
-int encode(int opcode, int srcReg1,int imm, int srcReg2, int srcReg3);
+int encode(int opcode, int srcReg1,int immFlag, int srcReg2, int srcReg3, int adress);
 
 
 /* Function to run the different steps of the assembler logic*/
