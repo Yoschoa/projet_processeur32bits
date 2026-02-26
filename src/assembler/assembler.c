@@ -40,9 +40,9 @@ const INSTRUCTION_LAYOUT INSTRUCTIONS[MAX_NUMBER_OF_INSTRUCTIONS] = {
 
 const char *patternEmpty = "^[ \t]*$";
 const char *patternComment = "^[ \t]*(;;|#|//).*$";
-const char *patternLabel = "^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*):[ \t]*(#.*|//.*)?$";
+const char *patternLabel = "^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*)[ \t]*:[ \t]*(;;.*|#.*|//.*)?$";
 const char *patternInstr = "^[ \t]*([a-zA-Z]+)([ \t]+[^;/]+)?[ \t]*(;;.*|#.*|//.*)?$";
-const char *patternLabelInstr = "^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*):[ \t]+([a-zA-Z]+)([ \t]+[^;/]+)?[ \t]*(;;.*|#.*|//.*)?$";
+const char *patternLabelInstr = "^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*)[ \t]*?:[ \t]+([a-zA-Z]+)([ \t]+[^;/]+)?[ \t]*(;;.*|#.*|//.*)?$";
 
 void extractTokens(char *opName, char *operandString, int instrTokens[MAX_NUM_TOKENS]){
     
@@ -222,7 +222,7 @@ uint32_t encode(int instrTokens[MAX_NUM_TOKENS]){
             instr |= ((uint32_t)(srcReg1 & 0x1F))   << 22;
             instr |= ((uint32_t)(immFlag & 0x1))    << 21;
             instr |= ((uint32_t)(srcReg2 & 0xFFFF)) << 5;
-            instr |= (destReg & 0x1F)   << 0;
+            instr |= ((uint32_t)(destReg & 0x1F))   << 0;
             break;
         case FORMAT_JR:
             instr |= ((uint32_t)(opcode  & 0x1F))   << 27;
@@ -251,12 +251,11 @@ uint32_t encode(int instrTokens[MAX_NUM_TOKENS]){
 }
 
 
-void runASM(FILE *fptr){
+void runASM(FILE *fptr, FILE *outputFile){
 
     int firstPass = 1, labelIndex = 0;
     int locationCounter = 0;
     char line[256];
-
     // Variables for all regex patterns
     regex_t rexComment, rexEmpty, rexLabel, rexInstr, rexLabelInstr;
 
@@ -282,7 +281,7 @@ void runASM(FILE *fptr){
             line[strcspn(line, "\r\n")] = '\0';
 
             regmatch_t matches[5];
-                printf("------------------------------------------------------------------------------------------------------------------------------------\n");
+                printf("--------------------------------------------------------------------------------------------------------------\n");
                 printf("line: %s\n", line);
 
             if (regexec(&rexEmpty, line, 0, NULL, 0) == 0)
@@ -322,8 +321,10 @@ void runASM(FILE *fptr){
                     extractTokens(opName, operands, instrTokens);
                     decInstrWrd = encode(instrTokens);
                     printf("Instruction Word: %d\n", decInstrWrd);
+                    fprintf(outputFile, "0x%08X 0x%08X\n", locationCounter, decInstrWrd);
                     
                 }
+
                 locationCounter ++;
                 
             }
@@ -353,6 +354,7 @@ void runASM(FILE *fptr){
                     extractTokens(opName, operands, instrTokens);
                     decInstrWrd = encode(instrTokens);
                     printf("Instruction Word: %d\n", decInstrWrd);
+                    fprintf(outputFile, "0x%08X 0x%08X\n", locationCounter, decInstrWrd);
                 }
                 locationCounter ++;
 
@@ -401,7 +403,7 @@ void runASM(FILE *fptr){
 }
 
 
-int main (int argc, char *argv[]){
+/* int main (int argc, char *argv[]){
 
     if (argc != 2){
         fprintf(stderr, "Usage: %s <assembly_file>\n", argv[0]);
@@ -414,9 +416,17 @@ int main (int argc, char *argv[]){
         return EXIT_FAILURE;
     }
 
-    runASM(fptr);
+    FILE *outputFile = fopen("./output.bin", "wb");
+    if (outputFile == NULL) {
+        fprintf(stderr, "Error creating output file.\n");
+        fclose(fptr);
+        return EXIT_FAILURE;
+    }
+
+    runASM(fptr, outputFile);
 
     fclose(fptr);
+    fclose(outputFile);
     return EXIT_SUCCESS;
 
-}
+} */

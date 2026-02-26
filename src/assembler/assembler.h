@@ -38,6 +38,8 @@ typedef struct {
     int lineNum;
 } LABEL;
 
+extern const INSTRUCTION_LAYOUT INSTRUCTIONS[MAX_NUMBER_OF_INSTRUCTIONS];
+
 /* Function procedure to parse the opcode, register numbers, immFlag, etc, then store them in array*/
 void extractTokens(char *opName, char *operandString, int instrTokens[MAX_NUM_TOKENS]);
 
@@ -46,6 +48,6 @@ uint32_t encode(int instrTokens[MAX_NUM_TOKENS]);
 
 
 /* Function to run the different steps of the assembler logic*/
-void runASM(FILE *fptr);
+void runASM(FILE *fptr, FILE *outputFile);
 
 #endif
