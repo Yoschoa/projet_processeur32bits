@@ -1,12 +1,13 @@
-#ifndef ASSEMBLER.H
-#define ASSEMBLER.H
+#ifndef ASSEMBLER_H
+#define ASSEMBLER_H
 #include <stdio.h>
+#include <stdint.h>
 
 #define MAX_NUMBER_OF_INSTRUCTIONS 19
-#define MAX_NUM_TOKENS 4
+#define MAX_NUM_TOKENS 5
 
 // Define the index used to access elements of the array instrTokens
-#define OPCODE_INDEX 0
+#define OPCODE_INDEX   0
 #define SRC_REG_INDEX1 1
 #define IMM_FLAG_INDEX 2
 #define SRC_REG_INDEX2 3
@@ -37,14 +38,16 @@ typedef struct {
     int lineNum;
 } LABEL;
 
+extern const INSTRUCTION_LAYOUT INSTRUCTIONS[MAX_NUMBER_OF_INSTRUCTIONS];
+
 /* Function procedure to parse the opcode, register numbers, immFlag, etc, then store them in array*/
 void extractTokens(char *opName, char *operandString, int instrTokens[MAX_NUM_TOKENS]);
 
 /* Function to parse/encode instruction and operands into a 8 byte hexadecimal word*/
-int encode(int opcode, int srcReg1,int immFlag, int srcReg2, int srcReg3, int adress);
+uint32_t encode(int instrTokens[MAX_NUM_TOKENS]);
 
 
 /* Function to run the different steps of the assembler logic*/
-void runASM(FILE *fptr);
+void runASM(FILE *fptr, FILE *outputFile);
 
 #endif
